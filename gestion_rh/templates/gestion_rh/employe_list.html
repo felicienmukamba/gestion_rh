@@ -1,0 +1,73 @@
+{% extends 'gestion_rh/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Liste des Employés</h1>
+    <p>
+        <button type="button" class="btn btn-primary js-create-employe" data-url="{% url 'gestion_rh:employe_create' %}">
+            <i class="fas fa-plus"></i> Ajouter un employé
+        </button>
+    </p>
+    <div id="employe-table" class="table-responsive">
+        {% include 'gestion_rh/partials/employe_list_partial.html' %}
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+$(function () {
+    // Fonction pour charger le formulaire dans la modale
+    const loadModal = function (e) {
+        e.preventDefault();
+        const btn = $(this);
+        $.ajax({
+            url: btn.attr("data-url"),
+            type: 'get',
+            dataType: 'json',
+            beforeSend: function () {
+                $("#modal-generic .modal-content").html("");
+                $("#modal-generic").modal("show");
+            },
+            success: function (data) {
+                $("#modal-generic .modal-content").html(data.html_form);
+            }
+        });
+    };
+
+    // Fonction pour sauvegarder le formulaire
+    const saveForm = function (e) {
+        e.preventDefault();
+        const form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            data: form.serialize(),
+            type: form.attr("method"),
+            dataType: 'json',
+            success: function (data) {
+                if (data.form_is_valid) {
+                    $("#employe-table").html(data.html_employe_list);
+                    $("#modal-generic").modal("hide");
+                } else {
+                    $("#modal-generic .modal-content").html(data.html_form);
+                }
+            }
+        });
+        return false;
+    };
+
+    // Binding des événements
+    // Création
+    $(".js-create-employe").on("click", loadModal);
+    
+    // Modification (avec délégation car les boutons sont chargés dynamiquement)
+    $("#employe-table").on("click", ".js-update-employe", loadModal);
+    
+    // Suppression
+    $("#employe-table").on("click", ".js-delete-employe", loadModal);
+
+    // Soumission du formulaire dans la modale
+    $("#modal-generic").on("submit", ".js-employe-form", saveForm);
+});
+</script>
+{% endblock %}

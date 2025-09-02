@@ -1,0 +1,33 @@
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Matricule</th>
+            <th>Nom Complet</th>
+            <th>Poste</th>
+            <th>Service</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for employe in employes %}
+        <tr>
+            <td>{{ employe.matricule }}</td>
+            <td>{{ employe.prenom }} {{ employe.nom }}</td>
+            <td>{{ employe.poste }}</td>
+            <td>{{ employe.service }}</td>
+            <td>
+                <button type="button" class="btn btn-warning btn-sm js-update-employe" data-url="{% url 'gestion_rh:employe_update' employe.pk %}">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-sm js-delete-employe" data-url="{% url 'gestion_rh:employe_delete' employe.pk %}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center bg-warning">Aucun employé trouvé</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
